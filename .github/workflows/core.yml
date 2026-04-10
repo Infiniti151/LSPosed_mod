@@ -21,6 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: '9770579f313de44397c295fd1cc44e3fcec4777c'
           submodules: "recursive"
           fetch-depth: 0
 
@@ -40,14 +41,14 @@ jobs:
         with:
           repository: libxposed/api
           path: libxposed/api
-          ref: '100'
+          ref: 'a42f85d06eac3373d266a534ab3b31a584b30774'
 
       - name: Checkout libxposed/service
         uses: actions/checkout@v4
         with:
           repository: libxposed/service
           path: libxposed/service
-          ref: '100'
+          ref: '4351a735755c86c031a977a62e52005b23048c4d'
 
       - name: Setup Java
         uses: actions/setup-java@v4

@@ -11,16 +11,14 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
-        mavenLocal {
-            content {
-                includeGroup("io.github.libxposed")
-            }
-        }
     }
     versionCatalogs {
-        create("libs")
+        create("libs") {
+            from(files("gradle/libs.versions.toml"))
+        }
     }
 }
 

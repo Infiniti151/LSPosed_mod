@@ -59,6 +59,7 @@ copy {
 
 dependencies {
     api(libs.libxposed.api)
+    implementation(libs.libxposed.service)
     implementation(libs.commons.lang3)
     implementation(libs.axml)
     implementation(projects.hiddenapi.bridge)

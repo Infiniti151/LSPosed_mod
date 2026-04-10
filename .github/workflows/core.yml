@@ -78,7 +78,7 @@ jobs:
           cd api
           ./gradlew publishToMavenLocal -Pversion=100 --scan
           cd ../service
-          ./gradlew :interface:publishToMavenLocal -Pversion=100-1.0.0 --scan
+          ./gradlew :interface:publishToMavenLocal -Pversion=100 --scan
           ./gradlew :service:publishToMavenLocal -Pversion=100-1.0.0 --scan
 
       - name: Build with Gradle

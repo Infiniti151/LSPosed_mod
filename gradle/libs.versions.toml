@@ -67,4 +67,4 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 
 libxposed-api = { group = "io.github.libxposed", name = "api", version.ref = "libxposed-api" }
 libxposed-service = { group = "io.github.libxposed", name = "service", version.ref = "libxposed-service" }
-libxposed-interface = { group = "io.github.libxposed", name = "interface", version.ref = "libxposed-service" }
+libxposed-interface = { group = "io.github.libxposed", name = "interface", version.ref = "libxposed-api" }

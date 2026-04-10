@@ -40,12 +40,14 @@ jobs:
         with:
           repository: libxposed/api
           path: libxposed/api
+          ref: '100'
 
       - name: Checkout libxposed/service
         uses: actions/checkout@v4
         with:
           repository: libxposed/service
           path: libxposed/service
+          ref: '100'
 
       - name: Setup Java
         uses: actions/setup-java@v4

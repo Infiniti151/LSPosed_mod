@@ -298,6 +298,9 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             binding.recyclerView.setAdapter(adaptor);
             layoutManager = new LinearLayoutManager(requireActivity());
             binding.recyclerView.setLayoutManager(layoutManager);
+
+            binding.recyclerView.setFastScrollEnabled(true);
+            binding.recyclerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
             
             binding.recyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
             binding.swipeRefreshLayout.setProgressViewEndTarget(true, binding.swipeRefreshLayout.getProgressViewEndOffset());
@@ -311,8 +314,8 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             // Initial state (Hidden)
             binding.btnScrollTop.setVisibility(View.GONE);
             binding.btnScrollBottom.setVisibility(View.GONE);
-            binding.btnScrollTop.setAlpha(0f);
-            binding.btnScrollBottom.setAlpha(0f);
+            binding.btnScrollTop.setAlpha(0.6f);
+            binding.btnScrollBottom.setAlpha(0.6f);
 
             binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override

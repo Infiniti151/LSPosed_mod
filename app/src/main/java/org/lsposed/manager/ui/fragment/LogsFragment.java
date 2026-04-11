@@ -271,56 +271,60 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
             @Override
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-                holder.item.setText(log.get(position));
+                final int currentPos = holder.getBindingAdapterPosition();
+                if (currentPos == RecyclerView.NO_POSITION) return;
+
+                holder.item.setText(log.get(currentPos));
                 boolean copyMode = isCopyMode();
 
-                holder.item.setTextIsSelectable(!copyMode);
-                holder.item.setFocusable(!copyMode);
-                holder.item.setLongClickable(!copyMode);
-                holder.item.setClickable(false); 
-
                 if (copyMode) {
-                    int backgroundColor = selectedPositions.contains(position) 
+                    int backgroundColor = selectedPositions.contains(currentPos) 
                         ? ResourceUtils.resolveColor(holder.itemView.getContext().getTheme(), com.google.android.material.R.attr.colorPrimaryContainer) 
                         : 0;
                     holder.itemView.setBackgroundColor(backgroundColor);
-                    
-                    holder.itemView.setOnClickListener(v -> {
-                        if (selectedPositions.contains(position)) {
-                            selectedPositions.remove(position);
-                            if (anchorPosition == position) anchorPosition = -1;
-                        } else {
-                            selectedPositions.add(position);
-                            anchorPosition = position;
-                        }
-                        notifyItemChanged(position);
-                    });
 
-                    holder.itemView.setOnLongClickListener(v -> {
-                        if (anchorPosition != -1 && anchorPosition != position) {
-                            int start = Math.min(anchorPosition, position);
-                            int end = Math.max(anchorPosition, position);
-                            
+                    View.OnLongClickListener rangeListener = v -> {
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        if (anchorPosition != -1 && anchorPosition != currentPos) {
+                            int start = Math.min(anchorPosition, currentPos);
+                            int end = Math.max(anchorPosition, currentPos);
                             for (int i = start; i <= end; i++) {
                                 selectedPositions.add(i);
                             }
-                            
                             notifyItemRangeChanged(start, (end - start) + 1);
-                            
-                            anchorPosition = position; 
-                            return true;
+                            anchorPosition = currentPos; 
+                            return true; 
                         }
                         return false;
+                    };
+
+                    holder.itemView.setOnLongClickListener(rangeListener);
+                    holder.item.setOnLongClickListener(rangeListener);
+                    
+                    holder.itemView.setOnClickListener(v -> {
+                        if (selectedPositions.contains(currentPos)) {
+                            selectedPositions.remove(currentPos);
+                            if (anchorPosition == currentPos) anchorPosition = -1;
+                        } else {
+                            selectedPositions.add(currentPos);
+                            anchorPosition = currentPos;
+                        }
+                        notifyItemChanged(currentPos);
                     });
 
-                    holder.item.setLongClickable(false); 
+                    holder.item.setTextIsSelectable(false);
+                    holder.item.setFocusable(false);
+                    holder.item.setLongClickable(true);
+                    holder.item.setClickable(false);
                 } else {
                     holder.itemView.setBackgroundColor(0);
                     holder.itemView.setOnClickListener(null);
-                    
                     holder.itemView.setOnLongClickListener(null);
+                    
+                    holder.item.setFocusable(true);
                     holder.item.setLongClickable(true);
                     holder.item.setTextIsSelectable(true);
+                    holder.item.setClickable(false); 
                 }
             }
 
@@ -368,15 +372,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                     item.setTextIsSelectable(true);
                     item.setFocusable(true);
                     item.setLongClickable(true);
-
-                    item.setOnLongClickListener(v -> {
-                        if (isCopyMode()) {
-                            return false;
-                        }
-
-                        v.getParent().requestDisallowInterceptTouchEvent(true);
-                        return false;
-                    });
                 }
             }
         }

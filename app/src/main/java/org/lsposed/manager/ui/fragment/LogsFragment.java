@@ -22,6 +22,8 @@ package org.lsposed.manager.ui.fragment;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -160,8 +162,8 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
     @Override
     public void onDestroyView() {
+        fadeHandler.removeCallbacks(hideActions);
         super.onDestroyView();
-
         binding = null;
     }
 
@@ -181,6 +183,39 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         protected SwiperefreshRecyclerviewBinding binding;
         protected LogAdaptor adaptor;
         protected LinearLayoutManager layoutManager;
+
+        // Ensure these are inside LogFragment so each tab has its own timer
+        private final Handler fadeHandler = new Handler(Looper.getMainLooper());
+        private final Runnable hideActions = () -> {
+            if (binding != null) {
+                binding.btnScrollTop.animate().alpha(0f).setDuration(300)
+                        .withEndAction(() -> {
+                            if (binding != null) binding.btnScrollTop.setVisibility(View.GONE);
+                        });
+                binding.btnScrollBottom.animate().alpha(0f).setDuration(300)
+                        .withEndAction(() -> {
+                            if (binding != null) binding.btnScrollBottom.setVisibility(View.GONE);
+                        });
+            }
+        };
+
+        private void silentScrollTo(int position) {
+            if (binding == null) return;
+            if (position == 0) { // Top
+                if (layoutManager.findFirstVisibleItemPosition() > SCROLL_THRESHOLD) {
+                    binding.recyclerView.scrollToPosition(0);
+                } else {
+                    binding.recyclerView.smoothScrollToPosition(0);
+                }
+            } else { // Bottom
+                int end = Math.max(adaptor.getItemCount() - 1, 0);
+                if (adaptor.getItemCount() - layoutManager.findLastVisibleItemPosition() > SCROLL_THRESHOLD) {
+                    binding.recyclerView.scrollToPosition(end);
+                } else {
+                    binding.recyclerView.smoothScrollToPosition(end);
+                }
+            }
+        }
 
         class LogAdaptor extends EmptyStateRecyclerView.EmptyStateAdapter<LogAdaptor.ViewHolder> {
             private List<CharSequence> log = Collections.emptyList();
@@ -244,6 +279,14 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             return new LogAdaptor();
         }
 
+        @Override
+        public void onDestroyView() {
+            // Essential: stop the timer for this specific fragment instance
+            fadeHandler.removeCallbacks(hideActions);
+            super.onDestroyView();
+            binding = null;
+        }
+
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -255,11 +298,39 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             binding.recyclerView.setAdapter(adaptor);
             layoutManager = new LinearLayoutManager(requireActivity());
             binding.recyclerView.setLayoutManager(layoutManager);
-            // ltr even for rtl languages because of log format
+            
             binding.recyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
             binding.swipeRefreshLayout.setProgressViewEndTarget(true, binding.swipeRefreshLayout.getProgressViewEndOffset());
             RecyclerViewKt.fixEdgeEffect(binding.recyclerView, false, true);
             binding.swipeRefreshLayout.setOnRefreshListener(adaptor::fullRefresh);
+
+            // FAB Setup
+            binding.btnScrollTop.setOnClickListener(v -> silentScrollTo(0));
+            binding.btnScrollBottom.setOnClickListener(v -> silentScrollTo(1));
+            
+            // Initial state (Hidden)
+            binding.btnScrollTop.setVisibility(View.GONE);
+            binding.btnScrollBottom.setVisibility(View.GONE);
+            binding.btnScrollTop.setAlpha(0f);
+            binding.btnScrollBottom.setAlpha(0f);
+
+            binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        fadeHandler.postDelayed(hideActions, 1500);
+                    } else {
+                        fadeHandler.removeCallbacks(hideActions);
+                        if (binding.btnScrollTop.getVisibility() != View.VISIBLE) {
+                            binding.btnScrollTop.setVisibility(View.VISIBLE);
+                            binding.btnScrollBottom.setVisibility(View.VISIBLE);
+                            binding.btnScrollTop.animate().alpha(1f).setDuration(200).start();
+                            binding.btnScrollBottom.animate().alpha(1f).setDuration(200).start();
+                        }
+                    }
+                }
+            });
+
             adaptor.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                 @Override
                 public void onChanged() {

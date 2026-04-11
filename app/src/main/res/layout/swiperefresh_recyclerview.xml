@@ -17,22 +17,60 @@
   ~ Copyright (C) 2021 LSPosed Contributors
   -->
 
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     android:id="@+id/swipe_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <org.lsposed.manager.ui.widget.EmptyStateRecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:fadeScrollbars="true"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical"
-        app:borderBottomVisibility="never"
-        app:borderTopDrawable="@null"
-        app:borderTopVisibility="whenTop"
-        app:fitsSystemWindowsInsets="@integer/internal_fragment_bottom_insets" />
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+      android:id="@+id/recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clipToPadding="false"
+      android:fadeScrollbars="true"
+      android:scrollbarStyle="insideOverlay"
+      android:scrollbars="vertical"
+      app:borderBottomVisibility="never"
+      app:borderTopDrawable="@null"
+      app:borderTopVisibility="whenTop"
+      app:fitsSystemWindowsInsets="@integer/internal_fragment_bottom_insets" />
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/btn_scroll_top"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:alpha="0"
+      android:rotation="180"
+      app:backgroundTint="?attr/colorPrimaryContainer"
+      app:fabSize="mini"
+      app:srcCompat="@drawable/ic_keyboard_arrow_down"
+      app:tint="?attr/colorOnPrimaryContainer" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/btn_scroll_bottom"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:alpha="0"
+      app:backgroundTint="?attr/colorPrimaryContainer"
+      app:fabSize="mini"
+      app:srcCompat="@drawable/ic_keyboard_arrow_down"
+      app:tint="?attr/colorOnPrimaryContainer" />
+  </LinearLayout>
+
+</FrameLayout>

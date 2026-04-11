@@ -312,6 +312,12 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             binding.btnScrollBottom.setVisibility(View.GONE);
             binding.btnScrollTop.setAlpha(0.6f);
             binding.btnScrollBottom.setAlpha(0.6f);
+            binding.btnScrollTop.setImageAlpha(153);
+            binding.btnScrollBottom.setImageAlpha(153);
+            binding.btnScrollTop.getBackground().setAlpha(153);
+            binding.btnScrollBottom.getBackground().setAlpha(153);
+            binding.btnScrollTop.setElevation(0f);
+            binding.btnScrollBottom.setElevation(0f);
 
             binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override

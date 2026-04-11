@@ -163,7 +163,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
     @Override
     public void onDestroyView() {
-        fadeHandler.removeCallbacks(hideActions);
         super.onDestroyView();
         binding = null;
     }
@@ -179,7 +178,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
     }
 
     public static class LogFragment extends BaseFragment {
-        public static final int SCROLL_THRESHOLD = 500;
+        public static final int SCROLL_THRESHOLD = 1;
         protected boolean verbose;
         protected SwiperefreshRecyclerviewBinding binding;
         protected LogAdaptor adaptor;
@@ -317,17 +316,26 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
             binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    // computeVerticalScrollOffset tells us the exact pixel distance from the top
+                    if (recyclerView.computeVerticalScrollOffset() > 0) {
+                        if (binding.btnScrollTop.getVisibility() != View.VISIBLE) {
+                            showButtons();
+                        }
+                    } else {
+                        // We are back at the absolute top (pixel 0)
+                        hideButtons();
+                    }
+                }
+
+                @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        fadeHandler.postDelayed(hideActions, 1500);
+                        // Keep them visible for 1.5 seconds after scrolling stops
+                        fadeHandler.postDelayed(hideActions, 4000);
                     } else {
+                        // User started scrolling again, cancel the fade-out timer
                         fadeHandler.removeCallbacks(hideActions);
-                        if (binding.btnScrollTop.getVisibility() != View.VISIBLE) {
-                            binding.btnScrollTop.setVisibility(View.VISIBLE);
-                            binding.btnScrollBottom.setVisibility(View.VISIBLE);
-                            binding.btnScrollTop.animate().alpha(1f).setDuration(200).start();
-                            binding.btnScrollBottom.animate().alpha(1f).setDuration(200).start();
-                        }
                     }
                 }
             });
@@ -340,6 +348,26 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             });
             adaptor.fullRefresh();
             return binding.getRoot();
+        }
+
+        private void showButtons() {
+            if (binding == null) return;
+            binding.btnScrollTop.setVisibility(View.VISIBLE);
+            binding.btnScrollBottom.setVisibility(View.VISIBLE);
+            binding.btnScrollTop.animate().alpha(1f).setDuration(200).start();
+            binding.btnScrollBottom.animate().alpha(1f).setDuration(200).start();
+        }
+
+        private void hideButtons() {
+            if (binding == null) return;
+            binding.btnScrollTop.animate().alpha(0f).setDuration(300)
+                    .withEndAction(() -> {
+                        if (binding != null) binding.btnScrollTop.setVisibility(View.GONE);
+                    });
+            binding.btnScrollBottom.animate().alpha(0f).setDuration(300)
+                    .withEndAction(() -> {
+                        if (binding != null) binding.btnScrollBottom.setVisibility(View.GONE);
+                    });
         }
 
         public void scrollToTop(LogsFragment logsFragment) {

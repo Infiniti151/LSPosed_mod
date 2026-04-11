@@ -297,11 +297,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             adaptor = createAdaptor();
             binding.recyclerView.setAdapter(adaptor);
             layoutManager = new LinearLayoutManager(requireActivity());
-            binding.recyclerView.setLayoutManager(layoutManager);
-
-            binding.recyclerView.setFastScrollEnabled(true);
-            binding.recyclerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
-            
+            binding.recyclerView.setLayoutManager(layoutManager);      
             binding.recyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
             binding.swipeRefreshLayout.setProgressViewEndTarget(true, binding.swipeRefreshLayout.getProgressViewEndOffset());
             RecyclerViewKt.fixEdgeEffect(binding.recyclerView, false, true);

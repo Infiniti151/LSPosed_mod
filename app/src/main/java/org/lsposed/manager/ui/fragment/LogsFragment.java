@@ -260,6 +260,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         class LogAdaptor extends EmptyStateRecyclerView.EmptyStateAdapter<LogAdaptor.ViewHolder> {
             List<CharSequence> log = Collections.emptyList();
             private boolean isLoaded = false;
+            private int anchorPosition = -1;
             final Set<Integer> selectedPositions = new HashSet<>();
 
             @NonNull
@@ -271,7 +272,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             @Override
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 holder.item.setText(log.get(position));
-                
                 boolean copyMode = isCopyMode();
 
                 holder.item.setTextIsSelectable(!copyMode);
@@ -281,22 +281,46 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
                 if (copyMode) {
                     int backgroundColor = selectedPositions.contains(position) 
-                        ? ResourceUtils.resolveColor(holder.itemView.getContext().getTheme(), com.google.android.material.R.attr.colorControlHighlight) 
+                        ? ResourceUtils.resolveColor(holder.itemView.getContext().getTheme(), com.google.android.material.R.attr.colorPrimaryContainer) 
                         : 0;
                     holder.itemView.setBackgroundColor(backgroundColor);
                     
                     holder.itemView.setOnClickListener(v -> {
                         if (selectedPositions.contains(position)) {
                             selectedPositions.remove(position);
+                            if (anchorPosition == position) anchorPosition = -1;
                         } else {
                             selectedPositions.add(position);
+                            anchorPosition = position;
                         }
                         notifyItemChanged(position);
                     });
+
+                    holder.itemView.setOnLongClickListener(v -> {
+                        if (anchorPosition != -1 && anchorPosition != position) {
+                            int start = Math.min(anchorPosition, position);
+                            int end = Math.max(anchorPosition, position);
+                            
+                            for (int i = start; i <= end; i++) {
+                                selectedPositions.add(i);
+                            }
+                            
+                            notifyItemRangeChanged(start, (end - start) + 1);
+                            
+                            anchorPosition = position; 
+                            return true;
+                        }
+                        return false;
+                    });
+
+                    holder.item.setLongClickable(false); 
                 } else {
                     holder.itemView.setBackgroundColor(0);
                     holder.itemView.setOnClickListener(null);
-                    holder.itemView.setClickable(false);
+                    
+                    holder.itemView.setOnLongClickListener(null);
+                    holder.item.setLongClickable(true);
+                    holder.item.setTextIsSelectable(true);
                 }
             }
 
@@ -545,13 +569,24 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             var root = super.onCreateView(inflater, container, savedInstanceState);
             binding.swipeRefreshLayout.removeView(binding.recyclerView);
-            HorizontalScrollView horizontalScrollView = new HorizontalScrollView(getContext());
-            horizontalScrollView.setFillViewport(true);
-            horizontalScrollView.setHorizontalScrollBarEnabled(false);
-            horizontalScrollView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-            binding.swipeRefreshLayout.addView(horizontalScrollView);
-            horizontalScrollView.addView(binding.recyclerView);
-            binding.recyclerView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            
+            HorizontalScrollView hsv = new HorizontalScrollView(getContext());
+            hsv.setFillViewport(true);
+            hsv.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, 
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+            
+            binding.swipeRefreshLayout.addView(hsv);
+            hsv.addView(binding.recyclerView);
+
+            ViewGroup.LayoutParams lp = binding.recyclerView.getLayoutParams();
+            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            lp.height = ViewGroup.LayoutParams.MATCH_PARENT; 
+            binding.recyclerView.setLayoutParams(lp);
+
+            binding.recyclerView.setVerticalScrollBarEnabled(true);
+            binding.recyclerView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+            
             return root;
         }
 
@@ -562,11 +597,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                     super.onBindViewHolder(holder, position);
 
-                    int backgroundColor = selectedPositions.contains(position) 
-                        ? ResourceUtils.resolveColor(holder.itemView.getContext().getTheme(), com.google.android.material.R.attr.colorControlHighlight) 
-                        : 0;
-                    holder.itemView.setBackgroundColor(backgroundColor);
-
                     var view = holder.item;
                     view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     int desiredWidth = view.getMeasuredWidth();
@@ -574,9 +604,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                     ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
                     if (layoutParams.width != desiredWidth) {
                         layoutParams.width = desiredWidth;
-                        if (binding.recyclerView.getWidth() < desiredWidth) {
-                            binding.recyclerView.requestLayout();
-                        }
+                        binding.recyclerView.requestLayout();
                     }
                 }
             };
@@ -644,16 +672,17 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         }
 
         public void setCopyMode(boolean enabled) {
-            this.copyModeEnabled = enabled;
-            if (!enabled) {
-                for (int i = 0; i < getItemCount(); i++) {
-                    Fragment f = getChildFragmentManager().findFragmentByTag("f" + getItemId(i));
-                    if (f instanceof LogFragment logFragment) {
-                        logFragment.adaptor.selectedPositions.clear();
-                    }
+        this.copyModeEnabled = enabled;
+        for (int i = 0; i < getItemCount(); i++) {
+            Fragment f = getChildFragmentManager().findFragmentByTag("f" + getItemId(i));
+            if (f instanceof LogFragment logFragment && logFragment.adaptor != null) {
+                if (!enabled) {
+                    logFragment.adaptor.selectedPositions.clear();
                 }
+                logFragment.adaptor.notifyDataSetChanged();
             }
-            notifyDataSetChanged(); 
         }
+        notifyDataSetChanged(); 
+    }
     }
 }

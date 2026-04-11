@@ -72,6 +72,7 @@ import java.util.stream.IntStream;
 
 import rikka.material.app.LocaleDelegate;
 import rikka.recyclerview.RecyclerViewKt;
+import rikka.core.util.ResourceUtils;
 
 public class LogsFragment extends BaseFragment implements MenuProvider {
     private FragmentPagerBinding binding;

@@ -185,7 +185,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         protected LogAdaptor adaptor;
         protected LinearLayoutManager layoutManager;
 
-        // Ensure these are inside LogFragment so each tab has its own timer
         private final Handler fadeHandler = new Handler(Looper.getMainLooper());
         private final Runnable hideActions = () -> {
             if (binding != null) {
@@ -202,13 +201,13 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
         private void silentScrollTo(int position) {
             if (binding == null) return;
-            if (position == 0) { // Top
+            if (position == 0) {
                 if (layoutManager.findFirstVisibleItemPosition() > SCROLL_THRESHOLD) {
                     binding.recyclerView.scrollToPosition(0);
                 } else {
                     binding.recyclerView.smoothScrollToPosition(0);
                 }
-            } else { // Bottom
+            } else {
                 int end = Math.max(adaptor.getItemCount() - 1, 0);
                 if (adaptor.getItemCount() - layoutManager.findLastVisibleItemPosition() > SCROLL_THRESHOLD) {
                     binding.recyclerView.scrollToPosition(end);
@@ -272,6 +271,17 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 public ViewHolder(ItemLogTextviewBinding binding) {
                     super(binding.getRoot());
                     item = binding.logItem;
+
+                    item.setTextIsSelectable(true);
+                    item.setFocusable(true);
+                    item.setFocusableInTouchMode(true); 
+                    item.setLongClickable(true);
+                    item.setAutoLinkMask(0);
+
+                    item.setOnLongClickListener(v -> {
+                        v.getParent().requestDisallowInterceptTouchEvent(true);                   
+                        return false; 
+                    });
                 }
             }
         }
@@ -282,7 +292,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
         @Override
         public void onDestroyView() {
-            // Essential: stop the timer for this specific fragment instance
             fadeHandler.removeCallbacks(hideActions);
             super.onDestroyView();
             binding = null;
@@ -304,11 +313,9 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             RecyclerViewKt.fixEdgeEffect(binding.recyclerView, false, true);
             binding.swipeRefreshLayout.setOnRefreshListener(adaptor::fullRefresh);
 
-            // FAB Setup
             binding.btnScrollTop.setOnClickListener(v -> silentScrollTo(0));
             binding.btnScrollBottom.setOnClickListener(v -> silentScrollTo(1));
             
-            // Initial state (Hidden)
             binding.btnScrollTop.setVisibility(View.GONE);
             binding.btnScrollBottom.setVisibility(View.GONE);
             if (binding.btnScrollTop != null && binding.btnScrollBottom != null) {
@@ -333,13 +340,11 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    // computeVerticalScrollOffset tells us the exact pixel distance from the top
                     if (recyclerView.computeVerticalScrollOffset() > 0) {
                         if (binding.btnScrollTop.getVisibility() != View.VISIBLE) {
                             showButtons();
                         }
                     } else {
-                        // We are back at the absolute top (pixel 0)
                         hideButtons();
                     }
                 }
@@ -347,10 +352,8 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        // Keep them visible for 1.5 seconds after scrolling stops
-                        fadeHandler.postDelayed(hideActions, 4000);
+                        fadeHandler.postDelayed(hideActions, 2000);
                     } else {
-                        // User started scrolling again, cancel the fade-out timer
                         fadeHandler.removeCallbacks(hideActions);
                     }
                 }

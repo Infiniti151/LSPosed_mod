@@ -3,9 +3,15 @@ name: Core
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-    tags: [ v* ]
+    branches: 
+      - main
+      - dev
+    tags: 
+      - 'v*'
   pull_request:
+    branches:
+      - main
+      - dev
   merge_group:
 
 jobs:

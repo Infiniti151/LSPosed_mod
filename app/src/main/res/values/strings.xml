@@ -17,7 +17,8 @@
   ~ Copyright (C) 2021 LSPosed Contributors
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
     <string name="overview">Overview</string>
     <string name="Modules">Modules</string>
@@ -39,7 +40,9 @@
         <item quantity="other">%d modules upgradable</item>
     </plurals>
     <string name="about_view_source_code"><![CDATA[View source code at %1$s<br/>Join our %2$s channel]]></string>
-    <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">null</string>
+    <string name="translators"
+        comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">
+        null</string>
 
     <string name="install">Install</string>
     <string name="install_summary">Tap to install LSPosed</string>
@@ -56,7 +59,9 @@
     <string name="need_update">Need to update</string>
     <string name="please_update_summary">Please install the latest version of LSPosed</string>
     <string name="developer_warning_title">Tips for module developer</string>
-    <string name="developer_warning_summary">Please disable deploy optimizations on Android Studio, or use `gradlew installDebug` command to install. Otherwise the module apk will not be updated.</string>
+    <string name="developer_warning_summary">Please disable deploy optimizations on Android Studio,
+        or use `gradlew installDebug` command to install. Otherwise the module apk will not be
+        updated.</string>
     <string name="info_api_version">API version</string>
     <string name="info_framework_version">Framework version</string>
     <string name="info_manager_package_name">Manager package name</string>
@@ -74,17 +79,22 @@
     <string name="selinux_permissive">SELinux is permissive</string>
     <string name="sepolicy_incorrect">SELinux policy is incorrect</string>
     <string name="update_lsposed">Update LSPosed</string>
-    <string name="update_lsposed_msg">Confirm to update LSPosed? This device will reboot after update completion</string>
+    <string name="update_lsposed_msg">Confirm to update LSPosed? This device will reboot after
+        update completion</string>
     <string name="info_copied">Copied to clipboard</string>
 
     <!-- WelcomeDialog -->
     <string name="parasitic_welcome">Welcome to LSPosed</string>
-    <string name="parasitic_welcome_summary">You are using the parasitic manager, which can create shortcut or still open from notification.</string>
-    <string name="parasitic_welcome_summary_no_shortcut_support">You are using the parasitic manager, which can open from notification.</string>
+    <string name="parasitic_welcome_summary">You are using the parasitic manager, which can create
+        shortcut or still open from notification.</string>
+    <string name="parasitic_welcome_summary_no_shortcut_support">You are using the parasitic
+        manager, which can open from notification.</string>
     <string name="create_shortcut">Create shortcut</string>
     <string name="never_show">Never show</string>
     <string name="app_welcome">Parasitic Manager Recommended</string>
-    <string name="app_welcome_summary">LSPosed now supports system parasitization to avoid detection, you can open parasitic manager from notification. It is recommended to uninstall the current application.</string>
+    <string name="app_welcome_summary">LSPosed now supports system parasitization to avoid
+        detection, you can open parasitic manager from notification. It is recommended to uninstall
+        the current application.</string>
 
     <!-- LogsActivity -->
     <string name="menuSaveToSd">Save</string>
@@ -103,14 +113,20 @@
     <string name="menu_enable_word_wrap">Word Wrap</string>
     <string name="enabled_verbose_log">Verbose log enabled</string>
     <string name="disabled_verbose_log">Verbose log disabled</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 
     <!-- ModulesActivity -->
     <string name="module_empty_description">(no description provided)</string>
-    <string name="warning_xposed_min_version">This module requires a newer Xposed version (%d) and thus cannot be activated</string>
-    <string name="warning_target_version_higher">This module is designed for a newer Xposed version (%d) and thus some functionalities may not work</string>
-    <string name="no_min_version_specified">This module does not specify the Xposed version it needs.</string>
-    <string name="warning_min_version_too_low">This module was created for Xposed version %1$d, but due to incompatible changes in version %2$d, it has been disabled</string>
-    <string name="warning_installed_on_external_storage">This module cannot be loaded because it\'s installed on the SD card, please move it to internal storage</string>
+    <string name="warning_xposed_min_version">This module requires a newer Xposed version (%d) and
+        thus cannot be activated</string>
+    <string name="warning_target_version_higher">This module is designed for a newer Xposed version
+        (%d) and thus some functionalities may not work</string>
+    <string name="no_min_version_specified">This module does not specify the Xposed version it
+        needs.</string>
+    <string name="warning_min_version_too_low">This module was created for Xposed version %1$d, but
+        due to incompatible changes in version %2$d, it has been disabled</string>
+    <string name="warning_installed_on_external_storage">This module cannot be loaded because it\'s
+        installed on the SD card, please move it to internal storage</string>
     <string name="module_uninstall">Uninstall</string>
     <string name="module_settings">Module settings</string>
     <string name="view_in_repo">View in Repo</string>
@@ -121,7 +137,8 @@
     <string name="module_installed">Added %1$s to user %2$s</string>
     <string name="module_install_failed">Adding module failed</string>
     <string name="install_to_user">Install to user %s</string>
-    <string name="install_to_user_message">Want to install %1$s to user %2$s? It is recommended to install manually, forcing installation via LSPosed may cause problems.</string>
+    <string name="install_to_user_message">Want to install %1$s to user %2$s? It is recommended to
+        install manually, forcing installation via LSPosed may cause problems.</string>
     <string name="expand">expand</string>
     <string name="collapse">collapse</string>
 
@@ -147,7 +164,8 @@
     <string name="failed_to_save_scope_list">Failed to save scope list</string>
     <string name="app_version">Version: %1$s</string>
     <string name="use_recommended">Recommended</string>
-    <string name="no_scope_selected_has_recommended">You did not select any app. Select recommended apps?</string>
+    <string name="no_scope_selected_has_recommended">You did not select any app. Select recommended
+        apps?</string>
     <string name="use_recommended_message">Select recommended apps?</string>
     <string name="module_is_not_activated_yet">Xposed module is not activated yet</string>
     <string name="requested_by_module">Recommended</string>
@@ -178,9 +196,11 @@
     <!-- SettingsActivity -->
     <string name="settings_group_framework">Framework</string>
     <string name="settings_disable_verbose_log">Disable verbose logs</string>
-    <string name="settings_disable_verbose_log_summary">Report issues request to include verbose logs</string>
+    <string name="settings_disable_verbose_log_summary">Report issues request to include verbose
+        logs</string>
     <string name="settings_force_enable_log">Enable watchdog logs</string>
-    <string name="settings_force_enable_log_summary">Enable watchdog logs on LSPosed, some apps detect it and close</string>
+    <string name="settings_force_enable_log_summary">Enable watchdog logs on LSPosed, some apps
+        detect it and close</string>
     <string name="pure_black_dark_theme">Black dark theme</string>
     <string name="pure_black_dark_theme_summary">Use the pure black theme if dark theme is enabled</string>
     <string name="settings_group_theme">Theme</string>
@@ -198,26 +218,32 @@
     <string name="theme_color">Theme color</string>
     <string name="theme_color_system">System theme color</string>
     <string name="settings_show_hidden_icon_apps_enabled">Force apps to show launcher icons</string>
-    <string name="settings_show_hidden_icon_apps_enabled_summary">After Android 10, apps are not allowed to hide their launcher icons. Turn off the toggle to disable this system feature.</string>
+    <string name="settings_show_hidden_icon_apps_enabled_summary">After Android 10, apps are not
+        allowed to hide their launcher icons. Turn off the toggle to disable this system feature.</string>
     <string name="settings_group_system">System</string>
     <string name="settings_language">Language</string>
     <string name="settings_translation_contributors">Translation contributors</string>
     <string name="settings_translation">Participate in translation</string>
     <string name="settings_translation_summary">Help us translate %s into your language</string>
-    <string name="settings_create_shortcut_summary">Create a shortcut that can open parasitic manager</string>
+    <string name="settings_create_shortcut_summary">Create a shortcut that can open parasitic
+        manager</string>
     <string name="settings_shortcut_pinned_hint">Shortcut pinned</string>
-    <string name="settings_unsupported_pin_shortcut_summary">The current default launcher does not support pin shortcuts</string>
+    <string name="settings_unsupported_pin_shortcut_summary">The current default launcher does not
+        support pin shortcuts</string>
     <string name="settings_enable_status_notification">Status Notification</string>
-    <string name="settings_enable_status_notification_summary">Show a notification that can open parasitic manager</string>
+    <string name="settings_enable_status_notification_summary">Show a notification that can open
+        parasitic manager</string>
     <string name="disable_status_notification_error">No shortcut, cannot disable notification</string>
     <string name="settings_update_channel">Update channel</string>
     <string name="update_channel_stable">Stable</string>
     <string name="update_channel_bate">Beta</string>
     <string name="update_channel_nightly">Nightly build</string>
     <string name="settings_xposed_api_call_protection">Xposed API call protection</string>
-    <string name="settings_xposed_api_call_protection_summary">Block dynamically loaded module code to use Xposed API, this may break some modules but benefit security</string>
+    <string name="settings_xposed_api_call_protection_summary">Block dynamically loaded module code
+        to use Xposed API, this may break some modules but benefit security</string>
     <string name="pref_title_restrict_classloader">Only module classloader can use Xposed API</string>
-    <string name="pref_summary_restrict_classloader">This may break some modules but benefit security (experimental feature)</string>
+    <string name="pref_summary_restrict_classloader">This may break some modules but benefit
+        security (experimental feature)</string>
     <string name="settings_group_cli">CLI</string>
     <string name="pref_title_enable_cli">Enable CLI</string>
     <string name="pref_summary_enable_cli">(experimental feature)</string>

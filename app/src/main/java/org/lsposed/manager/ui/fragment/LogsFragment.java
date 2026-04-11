@@ -105,6 +105,14 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 });
             });
 
+    private void copyToClipboard(String text) {
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+        android.content.ClipData clip = android.content.ClipData.newPlainText("lsposed_logs", text);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(clip);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -260,18 +268,9 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             }
 
             @Override
-            public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
-                if (!payloads.isEmpty() && payloads.contains("SELECTION_CHANGE")) {
-                    int backgroundColor = selectedPositions.contains(position) ? 0x40AAAAAA : 0;
-                    holder.itemView.setBackgroundColor(backgroundColor);
-                } else {
-                    onBindViewHolder(holder, position);
-                }
-            }
-
-            @Override
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 holder.item.setText(log.get(position));
+                
                 boolean copyMode = isCopyMode();
 
                 holder.item.setTextIsSelectable(!copyMode);
@@ -280,7 +279,9 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 holder.item.setClickable(false); 
 
                 if (copyMode) {
-                    int backgroundColor = selectedPositions.contains(position) ? 0x40AAAAAA : 0;
+                    int backgroundColor = selectedPositions.contains(position) 
+                        ? ResourceUtils.resolveColor(holder.itemView.getContext().getTheme(), com.google.android.material.R.attr.colorControlHighlight) 
+                        : 0;
                     holder.itemView.setBackgroundColor(backgroundColor);
                     
                     holder.itemView.setOnClickListener(v -> {
@@ -289,7 +290,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                         } else {
                             selectedPositions.add(position);
                         }
-                        notifyItemChanged(position, "SELECTION_CHANGE");
+                        notifyItemChanged(position);
                     });
                 } else {
                     holder.itemView.setBackgroundColor(0);
@@ -557,20 +558,23 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         protected LogAdaptor createAdaptor() {
             return new LogAdaptor() {
                 @Override
-                public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
-                    super.onBindViewHolder(holder, position, payloads); 
+                public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+                    super.onBindViewHolder(holder, position);
 
-                    if (payloads.isEmpty()) {
-                        var view = holder.item;
-                        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                        int desiredWidth = view.getMeasuredWidth();
+                    int backgroundColor = selectedPositions.contains(position) 
+                        ? ResourceUtils.resolveColor(holder.itemView.getContext().getTheme(), com.google.android.material.R.attr.colorControlHighlight) 
+                        : 0;
+                    holder.itemView.setBackgroundColor(backgroundColor);
 
-                        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-                        if (layoutParams.width != desiredWidth) {
-                            layoutParams.width = desiredWidth;
-                            if (binding.recyclerView.getWidth() < desiredWidth) {
-                                binding.recyclerView.requestLayout();
-                            }
+                    var view = holder.item;
+                    view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    int desiredWidth = view.getMeasuredWidth();
+
+                    ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+                    if (layoutParams.width != desiredWidth) {
+                        layoutParams.width = desiredWidth;
+                        if (binding.recyclerView.getWidth() < desiredWidth) {
+                            binding.recyclerView.requestLayout();
                         }
                     }
                 }

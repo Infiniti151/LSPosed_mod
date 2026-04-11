@@ -310,14 +310,24 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             // Initial state (Hidden)
             binding.btnScrollTop.setVisibility(View.GONE);
             binding.btnScrollBottom.setVisibility(View.GONE);
-            binding.btnScrollTop.setAlpha(0.6f);
-            binding.btnScrollBottom.setAlpha(0.6f);
-            binding.btnScrollTop.setImageAlpha(153);
-            binding.btnScrollBottom.setImageAlpha(153);
-            binding.btnScrollTop.getBackground().setAlpha(153);
-            binding.btnScrollBottom.getBackground().setAlpha(153);
-            binding.btnScrollTop.setElevation(0f);
-            binding.btnScrollBottom.setElevation(0f);
+            if (binding.btnScrollTop != null && binding.btnScrollBottom != null) {
+                ColorStateList topTint = binding.btnScrollTop.getBackgroundTintList();
+                if (topTint != null) {
+                    binding.btnScrollTop.setBackgroundTintList(topTint.withAlpha(153));
+                }
+                binding.btnScrollTop.setCompatElevation(0f);
+                binding.btnScrollTop.setImageAlpha(153);
+
+                ColorStateList bottomTint = binding.btnScrollBottom.getBackgroundTintList();
+                if (bottomTint != null) {
+                    binding.btnScrollBottom.setBackgroundTintList(bottomTint.withAlpha(153));
+                }
+                binding.btnScrollBottom.setCompatElevation(0f);
+                binding.btnScrollBottom.setImageAlpha(153);
+                
+                binding.btnScrollTop.setAlpha(0.6f);
+                binding.btnScrollBottom.setAlpha(0.6f);
+            }
 
             binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override

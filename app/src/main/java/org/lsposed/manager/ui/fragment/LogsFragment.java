@@ -65,6 +65,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -134,7 +136,21 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem item) {
         var itemId = item.getItemId();
-        if (itemId == R.id.menu_save) {
+        if (itemId == R.id.menu_copy_mode) {
+            boolean isCurrentlyEnabled = adapter.isCopyModeEnabled();
+            
+            if (isCurrentlyEnabled) {
+                String textToCopy = adapter.getSelectedTextFromActiveFragment(); 
+                if (!textToCopy.isEmpty()) {
+                    copyToClipboard(textToCopy);
+                    showHint(R.string.copied_to_clipboard, true);
+                }
+            }
+            
+            adapter.setCopyMode(!isCurrentlyEnabled);
+            item.setIcon(!isCurrentlyEnabled ? R.drawable.ic_check : R.drawable.ic_copy);
+            return true;
+        } else if (itemId == R.id.menu_save) {
             save();
             return true;
         } else if (itemId == R.id.menu_word_wrap) {
@@ -199,6 +215,21 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             }
         };
 
+        private boolean isCopyMode() {
+            var parent = getParentFragment();
+            if (parent instanceof LogsFragment logsFragment) {
+                return logsFragment.adapter.isCopyModeEnabled();
+            }
+            return false;
+        }
+
+        public String getSelectedText() {
+            return adaptor.selectedPositions.stream()
+                    .sorted()
+                    .map(pos -> adaptor.log.get(pos).toString())
+                    .collect(Collectors.joining("\n"));
+        }
+
         private void silentScrollTo(int position) {
             if (binding == null) return;
             if (position == 0) {
@@ -218,8 +249,9 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         }
 
         class LogAdaptor extends EmptyStateRecyclerView.EmptyStateAdapter<LogAdaptor.ViewHolder> {
-            private List<CharSequence> log = Collections.emptyList();
+            List<CharSequence> log = Collections.emptyList();
             private boolean isLoaded = false;
+            final Set<Integer> selectedPositions = new HashSet<>();
 
             @NonNull
             @Override
@@ -228,8 +260,42 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             }
 
             @Override
+            public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+                if (!payloads.isEmpty() && payloads.contains("SELECTION_CHANGE")) {
+                    int backgroundColor = selectedPositions.contains(position) ? 0x40AAAAAA : 0;
+                    holder.itemView.setBackgroundColor(backgroundColor);
+                } else {
+                    onBindViewHolder(holder, position);
+                }
+            }
+
+            @Override
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 holder.item.setText(log.get(position));
+                boolean copyMode = isCopyMode();
+
+                holder.item.setTextIsSelectable(!copyMode);
+                holder.item.setFocusable(!copyMode);
+                holder.item.setLongClickable(!copyMode);
+                holder.item.setClickable(false); 
+
+                if (copyMode) {
+                    int backgroundColor = selectedPositions.contains(position) ? 0x40AAAAAA : 0;
+                    holder.itemView.setBackgroundColor(backgroundColor);
+                    
+                    holder.itemView.setOnClickListener(v -> {
+                        if (selectedPositions.contains(position)) {
+                            selectedPositions.remove(position);
+                        } else {
+                            selectedPositions.add(position);
+                        }
+                        notifyItemChanged(position, "SELECTION_CHANGE");
+                    });
+                } else {
+                    holder.itemView.setBackgroundColor(0);
+                    holder.itemView.setOnClickListener(null);
+                    holder.itemView.setClickable(false);
+                }
             }
 
             @Override
@@ -242,6 +308,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 runOnUiThread(() -> {
                     isLoaded = true;
                     this.log = log;
+                    this.selectedPositions.clear();
                     notifyDataSetChanged();
                 });
             }
@@ -274,13 +341,15 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
                     item.setTextIsSelectable(true);
                     item.setFocusable(true);
-                    item.setFocusableInTouchMode(true); 
                     item.setLongClickable(true);
-                    item.setAutoLinkMask(0);
 
                     item.setOnLongClickListener(v -> {
-                        v.getParent().requestDisallowInterceptTouchEvent(true);                   
-                        return false; 
+                        if (isCopyMode()) {
+                            return false;
+                        }
+
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        return false;
                     });
                 }
             }
@@ -412,14 +481,13 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             var parent = getParentFragment();
             if (parent instanceof LogsFragment logsFragment) {
                 logsFragment.binding.appBar.setLifted(!binding.recyclerView.getBorderViewDelegate().isShowingTopBorder());
-                binding.recyclerView.getBorderViewDelegate().setBorderVisibilityChangedListener((top, oldTop, bottom, oldBottom) -> logsFragment.binding.appBar.setLifted(!top));
+                binding.recyclerView.getBorderViewDelegate().setBorderVisibilityChangedListener((top, oldTop, bottom, oldBottom) -> 
+                    logsFragment.binding.appBar.setLifted(!top));
+
                 logsFragment.setOptionsItemSelectListener(item -> {
                     int itemId = item.getItemId();
-                    if (itemId == R.id.menu_scroll_top) {
-                        scrollToTop(logsFragment);
-                    } else if (itemId == R.id.menu_scroll_down) {
-                        scrollToBottom(logsFragment);
-                    } else if (itemId == R.id.menu_clear) {
+                    
+                    if (itemId == R.id.menu_clear) {
                         if (ConfigManager.clearLogs(verbose)) {
                             logsFragment.showHint(R.string.logs_cleared, true);
                             adaptor.fullRefresh();
@@ -428,6 +496,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                         }
                         return true;
                     }
+                    
                     return false;
                 });
 
@@ -488,15 +557,21 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         protected LogAdaptor createAdaptor() {
             return new LogAdaptor() {
                 @Override
-                public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-                    super.onBindViewHolder(holder, position);
-                    var view = holder.item;
-                    view.measure(0, 0);
-                    int desiredWidth = view.getMeasuredWidth();
-                    ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-                    layoutParams.width = desiredWidth;
-                    if (binding.recyclerView.getWidth() < desiredWidth) {
-                        binding.recyclerView.requestLayout();
+                public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+                    super.onBindViewHolder(holder, position, payloads); 
+
+                    if (payloads.isEmpty()) {
+                        var view = holder.item;
+                        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                        int desiredWidth = view.getMeasuredWidth();
+
+                        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+                        if (layoutParams.width != desiredWidth) {
+                            layoutParams.width = desiredWidth;
+                            if (binding.recyclerView.getWidth() < desiredWidth) {
+                                binding.recyclerView.requestLayout();
+                            }
+                        }
                     }
                 }
             };
@@ -504,9 +579,21 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
     }
 
     class LogPageAdapter extends FragmentStateAdapter {
+        private boolean copyModeEnabled = false;
 
         public LogPageAdapter(@NonNull Fragment fragment) {
             super(fragment);
+        }
+
+        public String getSelectedTextFromActiveFragment() {
+            int currentPos = binding.viewPager.getCurrentItem();
+            long itemId = getItemId(currentPos);
+            Fragment f = getChildFragmentManager().findFragmentByTag("f" + itemId);
+            
+            if (f instanceof LogFragment logFragment) {
+                return logFragment.getSelectedText();
+            }
+            return "";
         }
 
         @NonNull
@@ -545,6 +632,23 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
         public void refresh() {
             runOnUiThread(this::notifyDataSetChanged);
+        }
+
+        public boolean isCopyModeEnabled() {
+            return copyModeEnabled;
+        }
+
+        public void setCopyMode(boolean enabled) {
+            this.copyModeEnabled = enabled;
+            if (!enabled) {
+                for (int i = 0; i < getItemCount(); i++) {
+                    Fragment f = getChildFragmentManager().findFragmentByTag("f" + getItemId(i));
+                    if (f instanceof LogFragment logFragment) {
+                        logFragment.adaptor.selectedPositions.clear();
+                    }
+                }
+            }
+            notifyDataSetChanged(); 
         }
     }
 }

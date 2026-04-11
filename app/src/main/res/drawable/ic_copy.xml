@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ This file is part of LSPosed.
   ~
   ~ LSPosed is free software: you can redistribute it and/or modify
@@ -18,27 +18,13 @@
   ~ Copyright (C) 2021 LSPosed Contributors
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/menu_copy_mode"
-        android:icon="@drawable/ic_copy"
-        android:showAsAction="ifRoom"
-        android:title="Copy Mode" />
-
-    <item
-        android:id="@+id/menu_save"
-        android:icon="@drawable/ic_save"
-        android:showAsAction="ifRoom"
-        android:title="@string/menuSaveToSd" />
-
-    <item
-        android:id="@+id/menu_clear"
-        android:showAsAction="never"
-        android:title="@string/menuClearLog" />
-
-    <item
-        android:id="@+id/menu_word_wrap"
-        android:checkable="true"
-        android:checked="false"
-        android:title="@string/menu_enable_word_wrap" />
-</menu>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:width="24dp"
+  android:height="24dp"
+  android:viewportWidth="24"
+  android:viewportHeight="24"
+  android:tint="?attr/colorControlNormal">
+  <path
+    android:fillColor="@android:color/white"
+    android:pathData="M16,1L4,1c-1.1,0 -2,0.9 -2,2v14h2L4,3h12L16,1zM19,5L8,5c-1.1,0 -2,0.9 -2,2v14c0,1.1 0.9,2 2,2h11c1.1,0 2,-0.9 2,-2L21,7c0,-1.1 -0.9,-2 -2,-2zM19,21L8,21L8,7h11v14z" />
+</vector>

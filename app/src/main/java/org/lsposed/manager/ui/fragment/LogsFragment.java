@@ -46,6 +46,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.textview.MaterialTextView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.lsposed.manager.App;
 import org.lsposed.manager.ConfigManager;

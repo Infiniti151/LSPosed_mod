@@ -103,8 +103,8 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
         if (savedInstanceState == null && getIntent().getDataString() == null) {
             String defaultPane = App.getPreferences().getString("default_pane", "overview");
             int targetId = switch (defaultPane) {
-                case "repository" -> R.id.repo_fragment;
-                case "modules" -> R.id.modules_fragment;
+                case "repository" -> R.id.repo_nav;
+                case "modules" -> R.id.modules_nav;
                 case "logs" -> R.id.logs_fragment;
                 case "settings" -> R.id.settings_fragment;
                 default -> R.id.main_fragment;

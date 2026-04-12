@@ -113,6 +113,14 @@
             android:summary="@string/settings_create_shortcut_summary"
             android:title="@string/create_shortcut" />
 
+        <rikka.preference.SimpleMenuPreference
+            android:defaultValue="overview"
+            android:icon="@drawable/ic_pane_settings"
+            android:key="default_pane"
+            android:title="@string/settings_default_pane"  
+            android:entries="@array/default_pane_entries"
+            android:entryValues="@array/default_pane_values" />
+
         <rikka.material.preference.MaterialSwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_outline_speaker_notes_24"

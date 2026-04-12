@@ -230,6 +230,22 @@
     <string name="settings_shortcut_pinned_hint">Shortcut pinned</string>
     <string name="settings_unsupported_pin_shortcut_summary">The current default launcher does not
         support pin shortcuts</string>
+    <string name="settings_default_pane">Default pane</string>
+    <string name="settings_default_pane_summary">Choose which pane opens by default</string>
+    <string-array name="default_pane_entries">
+        <item>Overview</item>
+        <item>Repository</item>
+        <item>Modules</item>
+        <item>Logs</item>
+        <item>Settings</item>
+    </string-array>
+    <string-array name="default_pane_values">
+        <item>overview</item>
+        <item>repository</item>
+        <item>modules</item>
+        <item>logs</item>
+        <item>settings</item>
+    </string-array>
     <string name="settings_enable_status_notification">Status Notification</string>
     <string name="settings_enable_status_notification_summary">Show a notification that can open
         parasitic manager</string>

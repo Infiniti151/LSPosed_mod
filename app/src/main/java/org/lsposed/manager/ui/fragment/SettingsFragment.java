@@ -97,6 +97,13 @@ public class SettingsFragment extends BaseFragment {
     public static class PreferenceFragment extends PreferenceFragmentCompat {
         private SettingsFragment parentFragment;
 
+        private void updateDefaultPaneSummary(SimpleMenuPreference preference, String value) {
+            int index = preference.findIndexOfValue(value);
+            if (index >= 0) {
+                preference.setSummary(preference.getEntries()[index]);
+            }
+        }
+
         ActivityResultLauncher<String> backupLauncher = registerForActivityResult(new ActivityResultContracts.CreateDocument("application/gzip"), uri -> {
             if (uri == null || parentFragment == null) return;
             parentFragment.runAsync(() -> {
@@ -207,6 +214,17 @@ public class SettingsFragment extends BaseFragment {
                     })) {
                         parentFragment.showHint(R.string.settings_unsupported_pin_shortcut_summary, true);
                     }
+                    return true;
+                });
+            }
+
+            SimpleMenuPreference defaultPane = findPreference("default_pane");
+            if (defaultPane != null) {
+                updateDefaultPaneSummary(defaultPane, defaultPane.getValue());
+                
+                defaultPane.setOnPreferenceChangeListener((preference, newValue) -> {
+                    App.getPreferences().edit().putString("default_pane", (String) newValue).apply();
+                    updateDefaultPaneSummary((SimpleMenuPreference) preference, (String) newValue);
                     return true;
                 });
             }

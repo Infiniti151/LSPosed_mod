@@ -47,7 +47,6 @@ jobs:
             --build-cache \
             --configuration-cache \
             -Dorg.gradle.configuration-cache.problems=warn \
-            -PversionCode=7311 \
             --info
 
       - name: Rename APK

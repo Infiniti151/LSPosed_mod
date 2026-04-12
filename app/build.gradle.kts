@@ -45,6 +45,7 @@ android {
 
     defaultConfig {
         applicationId = defaultManagerPackageName
+        versionCode = 7311
         buildConfigField("long", "BUILD_TIME", Instant.now().epochSecond.toString())
     }
 

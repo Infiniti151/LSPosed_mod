@@ -100,7 +100,7 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
         var nav = (NavigationBarView) binding.nav;
         NavigationUI.setupWithNavController(nav, navController);
 
-        if (savedInstanceState == null && intent.getDataString() == null) {
+        if (savedInstanceState == null && getIntent().getDataString() == null) {
             String defaultPane = App.getPreferences().getString("default_pane", "overview");
             int targetId = switch (defaultPane) {
                 case "repository" -> R.id.repo_fragment;

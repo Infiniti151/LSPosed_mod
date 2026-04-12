@@ -1,0 +1,3 @@
+#!/system/bin/sh
+
+am broadcast -a android.provider.Telephony.SECRET_CODE -d android_secret_code://5776733 >/dev/null 2>&1

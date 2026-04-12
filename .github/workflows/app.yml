@@ -1,0 +1,53 @@
+name: App
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - dev
+    paths:
+      - 'app/**'
+      - 'services/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Write key
+        run: |
+          if [ ! -z "${{ secrets.KEY_STORE }}" ]; then
+            echo androidStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
+            echo androidKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
+            echo androidKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
+            echo androidStoreFile='key.jks' >> gradle.properties
+            echo ${{ secrets.KEY_STORE }} | base64 --decode > key.jks
+          fi
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6.1.0
+        with:
+          gradle-version: 8.6
+          cache-provider: basic
+          
+      - name: Build Manager APK
+        run: ./gradlew :app:assembleRelease --configuration-cache --info
+
+      - name: Rename APK
+        run: mv app/build/outputs/apk/release/{app-release,manager}.apk
+
+      - name: Upload Manager APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: manager-apk
+          path: app/build/outputs/apk/release/manager.apk

@@ -8,6 +8,7 @@ on:
     paths:
       - 'app/**'
       - 'services/**'
+      - '.github/workflows/app.yml'
 
 jobs:
   build:
@@ -41,7 +42,12 @@ jobs:
           cache-provider: basic
           
       - name: Build Manager APK
-        run: ./gradlew :app:assembleRelease --configuration-cache --info
+        run: |
+          ./gradlew :app:assembleRelease \
+            --build-cache \
+            --configuration-cache \
+            -Dorg.gradle.configuration-cache.problems=warn \
+            --info
 
       - name: Rename APK
         run: mv app/build/outputs/apk/release/{app-release,manager}.apk

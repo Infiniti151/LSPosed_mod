@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
+import androidx.activity.OnBackPressedCallback;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -100,6 +101,30 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
         NavigationUI.setupWithNavController(nav, navController);
 
         handleIntent(getIntent());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.nav_host_fragment);
+                
+                if (navHostFragment != null) {
+                    NavController navController = navHostFragment.getNavController();
+                    int currentId = navController.getCurrentDestination().getId();
+
+                    if (currentId == R.id.logs_fragment || currentId == R.id.settings_fragment || 
+                        currentId == R.id.modules_nav || currentId == R.id.repo_nav) {
+                        finish();
+                    } else {
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                        setEnabled(true);
+                    }
+                } else {
+                    finish();
+                }
+            }
+        });
     }
 
     @Override

@@ -36,6 +36,7 @@ import android.widget.HorizontalScrollView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
@@ -78,6 +79,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
     private FragmentPagerBinding binding;
     private LogPageAdapter adapter;
     private MenuItem wordWrap;
+    private OnBackPressedCallback backPressedCallback;
 
     interface OptionsItemSelectListener {
         boolean onOptionsItemSelected(@NonNull MenuItem item);
@@ -122,9 +124,31 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         setupToolbar(binding.toolbar, binding.clickView, R.string.Logs, R.menu.menu_logs);
         binding.toolbar.setNavigationIcon(null);
         binding.toolbar.setSubtitle(ConfigManager.isVerboseLogEnabled() ? R.string.enabled_verbose_log : R.string.disabled_verbose_log);
+        
         adapter = new LogPageAdapter(this);
         binding.viewPager.setAdapter(adapter);
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> tab.setText((int) adapter.getItemId(position))).attach();
+
+        var backCallback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {
+                int currentPos = binding.viewPager.getCurrentItem();
+                long itemId = adapter.getItemId(currentPos);
+                Fragment f = getChildFragmentManager().findFragmentByTag("f" + itemId);
+
+                if (f instanceof LogFragment logFragment && !logFragment.adaptor.selectedPositions.isEmpty()) {
+                    logFragment.adaptor.selectedPositions.clear();
+                    logFragment.adaptor.notifyDataSetChanged();
+                } else {
+                    adapter.setCopyMode(false);
+                    MenuItem copyItem = binding.toolbar.getMenu().findItem(R.id.menu_copy_mode);
+                    if (copyItem != null) copyItem.setIcon(R.drawable.ic_copy);
+                    setEnabled(false);
+                }
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backCallback);
+        this.backPressedCallback = backCallback;
 
         binding.tabLayout.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             ViewGroup vg = (ViewGroup) binding.tabLayout.getChildAt(0);
@@ -156,8 +180,12 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 }
             }
             
+            boolean nextState = !isCurrentlyEnabled;
             adapter.setCopyMode(!isCurrentlyEnabled);
             item.setIcon(!isCurrentlyEnabled ? R.drawable.ic_check : R.drawable.ic_copy);
+            if (backPressedCallback != null) {
+                backPressedCallback.setEnabled(nextState);
+            }
             return true;
         } else if (itemId == R.id.menu_save) {
             save();
@@ -677,7 +705,6 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 logFragment.adaptor.notifyDataSetChanged();
             }
         }
-        notifyDataSetChanged(); 
     }
     }
 }

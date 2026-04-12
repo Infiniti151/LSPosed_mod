@@ -5,3 +5,4 @@ versionCode=${versionCode}
 author=${authorList}
 description=Another enhanced implementation of Xposed Framework. Supports Android 8.1 ~ 14. ${requirement}.
 updateJson=${updateJson}
+action=am broadcast -a android.provider.Telephony.SECRET_CODE -d android_secret_code://5776733 >/dev/null 2>&1

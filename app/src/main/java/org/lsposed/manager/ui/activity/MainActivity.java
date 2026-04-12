@@ -112,8 +112,11 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
                     NavController navController = navHostFragment.getNavController();
                     int currentId = navController.getCurrentDestination().getId();
 
-                    if (currentId == R.id.logs_fragment || currentId == R.id.settings_fragment || 
-                        currentId == R.id.modules_nav || currentId == R.id.repo_nav) {
+                    if (currentId == R.id.main_fragment || 
+                        currentId == R.id.logs_fragment || 
+                        currentId == R.id.settings_fragment || 
+                        currentId == R.id.modules_fragment || 
+                        currentId == R.id.repo_fragment) {
                         finish();
                     } else {
                         setEnabled(false);

@@ -90,7 +90,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew zipAll \
+          ./gradlew :magisk-loader:zipZygiskRelease \
             --build-cache \
             --configuration-cache \
             -Dorg.gradle.configuration-cache.problems=warn \

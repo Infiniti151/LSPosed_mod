@@ -159,7 +159,7 @@ public class ConfigFileManager {
 
     static ParcelFileDescriptor getManagerApk() throws IOException {
         if (fd != null) return fd.dup();
-        InstallerVerifier.verifyInstallerSignature(managerApkPath.toString());
+        //InstallerVerifier.verifyInstallerSignature(managerApkPath.toString());
 
         SELinux.setFileContext(managerApkPath.toString(), "u:object_r:system_file:s0");
         fd = ParcelFileDescriptor.open(managerApkPath.toFile(), ParcelFileDescriptor.MODE_READ_ONLY);

@@ -38,6 +38,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDestination;
 
 import com.google.android.material.navigation.NavigationBarView;
 

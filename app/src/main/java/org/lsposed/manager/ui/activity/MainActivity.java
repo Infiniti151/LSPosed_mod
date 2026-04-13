@@ -37,6 +37,7 @@ import androidx.navigation.Navigation;
 import androidx.activity.OnBackPressedCallback;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -130,7 +131,7 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
                         setEnabled(false); 
                         getOnBackPressedDispatcher().onBackPressed();
                         setEnabled(true);
-                        return;
+                        return; 
                     }
 
                     NavController navController = navHostFragment.getNavController();

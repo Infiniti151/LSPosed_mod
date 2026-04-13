@@ -703,18 +703,17 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         }
 
         public void setCopyMode(boolean enabled) {
-        this.copyModeEnabled = enabled;
-        for (int i = 0; i < getItemCount(); i++) {
-            Fragment f = getChildFragmentManager().findFragmentByTag("f" + getItemId(i));
-            if (f instanceof LogFragment logFragment && logFragment.adaptor != null) {
-                if (!enabled) {
-                    logFragment.adaptor.selectedPositions.clear();
-                    logFragment.adaptor.anchorPosition = -1;
+            this.copyModeEnabled = enabled;
+            for (int i = 0; i < getItemCount(); i++) {
+                Fragment f = getChildFragmentManager().findFragmentByTag("f" + getItemId(i));
+                if (f instanceof LogFragment logFragment && logFragment.adaptor != null) {
+                    if (!enabled) {
+                        logFragment.adaptor.selectedPositions.clear();
+                        logFragment.adaptor.anchorPosition = -1;
+                    }
+                    logFragment.adaptor.notifyDataSetChanged();
                 }
-                logFragment.adaptor.notifyDataSetChanged();
             }
         }
-    }
-    }
     }
 }

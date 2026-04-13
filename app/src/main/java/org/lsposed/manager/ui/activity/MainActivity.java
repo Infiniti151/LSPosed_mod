@@ -124,6 +124,15 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
                         .findFragmentById(R.id.nav_host_fragment);
                 
                 if (navHostFragment != null) {
+                    Fragment currentFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+
+                    if (navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+                        setEnabled(false); 
+                        getOnBackPressedDispatcher().onBackPressed();
+                        setEnabled(true);
+                        return;
+                    }
+
                     NavController navController = navHostFragment.getNavController();
                     int currentId = navController.getCurrentDestination().getId();
 

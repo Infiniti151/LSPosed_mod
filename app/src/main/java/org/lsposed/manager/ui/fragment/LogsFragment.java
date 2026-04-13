@@ -139,12 +139,20 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                 if (f instanceof LogFragment logFragment && !logFragment.adaptor.selectedPositions.isEmpty()) {
                     logFragment.adaptor.selectedPositions.clear();
                     logFragment.adaptor.notifyDataSetChanged();
-                } else {
+                    return;
+                }
+
+                if (adapter.isCopyModeEnabled()) {
                     adapter.setCopyMode(false);
                     MenuItem copyItem = binding.toolbar.getMenu().findItem(R.id.menu_copy_mode);
                     if (copyItem != null) copyItem.setIcon(R.drawable.ic_copy);
-                    setEnabled(false);
+                    
+                    this.setEnabled(false);
+                    return;
                 }
+
+                this.setEnabled(false);
+                requireActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backCallback);
@@ -701,10 +709,12 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             if (f instanceof LogFragment logFragment && logFragment.adaptor != null) {
                 if (!enabled) {
                     logFragment.adaptor.selectedPositions.clear();
+                    logFragment.adaptor.anchorPosition = -1;
                 }
                 logFragment.adaptor.notifyDataSetChanged();
             }
         }
+    }
     }
     }
 }
